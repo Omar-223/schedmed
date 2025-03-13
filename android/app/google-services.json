@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474836478531",
+    "project_id": "schedmed-12f12",
+    "storage_bucket": "schedmed-12f12.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474836478531:android:10c32baa80c8af8d3202f6",
+        "android_client_info": {
+          "package_name": "com.example.schedmed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGyBlO09VbDloNShu0i7QJ6tRfcF39LYg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
