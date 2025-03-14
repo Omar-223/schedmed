@@ -7,7 +7,7 @@ class UserProvider extends ChangeNotifier {
   
   List<UserModel> _users = [];
   List<UserModel> _patients = [];
-  List<UserModel> _admins = [];
+  List<UserModel> _clinics = [];
   UserModel? _selectedUser;
   bool _isLoading = false;
   String? _error;
@@ -16,7 +16,7 @@ class UserProvider extends ChangeNotifier {
   // Getters
   List<UserModel> get users => _users;
   List<UserModel> get patients => _patients;
-  List<UserModel> get admins => _admins;
+  List<UserModel> get clinics => _clinics;
   UserModel? get selectedUser => _selectedUser;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -74,16 +74,16 @@ class UserProvider extends ChangeNotifier {
     }
   }
   
-  // Load all admins
-  void loadAllAdmins() {
+  // Load all clinics
+  void loadAllClinics() {
     _isLoading = true;
     _error = null;
     notifyListeners();
     
     try {
-      _userService.getAllAdmins().listen(
-        (admins) {
-          _admins = admins;
+      _userService.getAllClinics().listen(
+        (clinics) {
+          _clinics = clinics;
           _isLoading = false;
           notifyListeners();
         },

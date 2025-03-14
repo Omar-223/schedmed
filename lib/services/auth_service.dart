@@ -39,7 +39,7 @@ class AuthService {
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'email': email,
         'name': name,
-        'role': role == UserRole.admin ? 'admin' : 'patient',
+        'role': role == UserRole.clinic ? 'clinic' : 'patient',
         'createdAt': Timestamp.now(),
       });
 
@@ -64,7 +64,7 @@ class AuthService {
       DocumentSnapshot doc = await _firestore.collection('users').doc(userId).get();
       if (doc.exists) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return data['role'] == 'admin' ? UserRole.admin : UserRole.patient;
+        return data['role'] == 'clinic' ? UserRole.clinic : UserRole.patient;
       }
       return UserRole.patient; // Default to patient if not found
     } catch (e) {

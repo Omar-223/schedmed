@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:schedmed/models/user_model.dart';
 import 'package:schedmed/providers/auth_provider.dart';
 import 'package:schedmed/utils/theme.dart';
-import 'package:schedmed/widgets/custom_button.dart';
 import 'package:schedmed/screens/auth/login_screen.dart';
 
 class PatientProfileScreen extends StatefulWidget {
@@ -22,7 +21,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
-  
+  late TextEditingController _userRoleController;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +32,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
     _emailController = TextEditingController(text: user?.email ?? '');
     _phoneController = TextEditingController(text: user?.phoneNumber ?? '');
     _addressController = TextEditingController(text: user?.address ?? '');
+    _userRoleController = TextEditingController(text: user?.role.name ?? '');
   }
   
   @override
@@ -129,7 +130,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              'Patient',
+              _userRoleController.text,
               style: TextStyle(
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.bold,

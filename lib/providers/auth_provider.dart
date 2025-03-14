@@ -18,15 +18,25 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isAuthenticated => _firebaseUser != null;
+  UserRole get userRole => _user?.role ?? UserRole.patient;
   
   // Constructor
   AuthProvider() {
+    print("AuthProvider initialized");
     _init();
   }
   
   // Initialize the provider
   Future<void> _init() async {
+    print("AuthProvider _init called");
+    _firebaseUser = _auth.currentUser;
+    if (_firebaseUser != null) {
+      print("Current user found: ${_firebaseUser!.email}");
+      await _fetchUserData();
+    }
+    
     _auth.authStateChanges().listen((User? user) async {
+      print("Auth state changed: ${user?.email}");
       _firebaseUser = user;
       
       if (user != null) {
@@ -50,10 +60,14 @@ class AuthProvider extends ChangeNotifier {
       
       if (doc.exists) {
         _user = UserModel.fromFirestore(doc);
+        print("User data fetched: ${_user?.displayName}");
+      } else {
+        print("User document does not exist in Firestore");
       }
       
       _setLoading(false);
     } catch (e) {
+      print("Error fetching user data: $e");
       _setError('Failed to fetch user data: $e');
     }
   }
@@ -62,6 +76,9 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> signInWithEmailAndPassword(String email, String password) async {
     try {
       _setLoading(true);
+      clearError();
+      
+      print("Attempting to sign in with email: $email");
       
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -69,6 +86,8 @@ class AuthProvider extends ChangeNotifier {
       );
       
       _firebaseUser = userCredential.user;
+      print("Sign in successful: ${_firebaseUser?.email}");
+      
       await _fetchUserData();
       
       _setLoading(false);
@@ -93,9 +112,11 @@ class AuthProvider extends ChangeNotifier {
           errorMessage = 'An error occurred: ${e.message}';
       }
       
+      print("Sign in error: $errorMessage");
       _setError(errorMessage);
       return false;
     } catch (e) {
+      print("Sign in error: $e");
       _setError('Failed to sign in: $e');
       return false;
     }
@@ -107,6 +128,7 @@ class AuthProvider extends ChangeNotifier {
     String password,
     String displayName,
     String phoneNumber,
+    UserRole role,
   ) async {
     try {
       _setLoading(true);
@@ -128,7 +150,7 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         displayName: displayName,
         phoneNumber: phoneNumber,
-        role: UserRole.patient,
+        role: role,
         createdAt: DateTime.now(),
       );
       
@@ -171,11 +193,16 @@ class AuthProvider extends ChangeNotifier {
   // Sign out
   Future<void> signOut() async {
     try {
+      print("AuthProvider: Signing out user");
       await _auth.signOut();
       _user = null;
+      _firebaseUser = null;
+      print("AuthProvider: User signed out successfully");
       notifyListeners();
     } catch (e) {
+      print("AuthProvider: Error signing out: $e");
       _setError('Failed to sign out: $e');
+      throw e; // Rethrow to allow handling in UI
     }
   }
   

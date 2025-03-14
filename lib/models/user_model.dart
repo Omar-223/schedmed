@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum UserRole {
   patient,
   doctor,
-  admin
+  clinic
 }
 
 class UserModel {
@@ -90,8 +90,8 @@ class UserModel {
     switch (role) {
       case 'doctor':
         return UserRole.doctor;
-      case 'admin':
-        return UserRole.admin;
+      case 'clinic':
+        return UserRole.clinic;
       case 'patient':
       default:
         return UserRole.patient;
@@ -104,6 +104,6 @@ class UserModel {
   // Check if user is a doctor
   bool get isDoctor => role == UserRole.doctor;
   
-  // Check if user is an admin
-  bool get isAdmin => role == UserRole.admin;
+  // Check if user is a clinic
+  bool get isClinic => role == UserRole.clinic;
 } 

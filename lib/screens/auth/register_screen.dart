@@ -20,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   UserRole _selectedRole = UserRole.patient;
@@ -30,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -37,11 +39,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       
+      print("Registering user with role: $_selectedRole");
+      
       final success = await authProvider.registerWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text,
         _nameController.text.trim(),
-        "", // Phone number (empty string as placeholder)
+        _phoneController.text.trim(),
+        _selectedRole,
       );
       
       if (success && mounted) {
@@ -64,10 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        elevation: 0,
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -78,22 +80,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Register title
-                  const Text(
-                    'Create an Account',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Please fill in the form to create your account',
-                    style: TextStyle(
-                      color: AppTheme.textLightColor,
+                  // Logo and title
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "S",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Create an Account',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Please fill in the form to create your account',
+                          style: TextStyle(
+                            color: AppTheme.textLightColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 32),
+                  
                   // Name field
                   CustomTextField(
                     label: 'Full Name',
@@ -108,6 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  
                   // Email field
                   CustomTextField(
                     label: 'Email',
@@ -126,6 +156,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  
+                  // Phone field
+                  CustomTextField(
+                    label: 'Phone Number',
+                    hint: 'Enter your phone number',
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Icons.phone_outlined,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your phone number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  
                   // Password field
                   CustomTextField(
                     label: 'Password',
@@ -155,6 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  
                   // Confirm password field
                   CustomTextField(
                     label: 'Confirm Password',
@@ -184,6 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  
                   // Role selection
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,8 +264,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             Divider(height: 1, color: Colors.grey.shade300),
                             RadioListTile<UserRole>(
-                              title: const Text('Admin'),
-                              value: UserRole.admin,
+                              title: const Text('Clinic'),
+                              value: UserRole.clinic,
                               groupValue: _selectedRole,
                               onChanged: (value) {
                                 setState(() {
@@ -230,6 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
+                  
                   // Error message
                   if (authProvider.error != null)
                     Container(
@@ -248,6 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   if (authProvider.error != null) const SizedBox(height: 24),
+                  
                   // Register button
                   CustomButton(
                     text: 'Register',
@@ -256,6 +307,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     icon: Icons.person_add,
                   ),
                   const SizedBox(height: 24),
+                  
                   // Login link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

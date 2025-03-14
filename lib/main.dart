@@ -4,17 +4,37 @@ import 'package:provider/provider.dart';
 import 'package:schedmed/providers/appointment_provider.dart';
 import 'package:schedmed/providers/auth_provider.dart';
 import 'package:schedmed/providers/doctor_provider.dart';
-import 'package:schedmed/screens/auth/login_screen.dart';
-import 'package:schedmed/screens/patient/patient_home_screen.dart';
+import 'package:schedmed/screens/auth/splash_screen.dart';
 import 'package:schedmed/utils/theme.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  
+  // Catch any errors during initialization
+  try {
+    // Initialize Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    
+    // Run the app
+    runApp(const MyApp());
+  } catch (e) {
+    print("Error initializing app: $e");
+    // Show error screen if initialization fails
+    runApp(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text(
+            'Failed to initialize app: $e',
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+      ),
+    ));
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -32,33 +52,8 @@ class MyApp extends StatelessWidget {
         title: 'SchedMed',
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
-        home: const AuthWrapper(),
+        home: const SplashScreen(),
       ),
     );
-  }
-}
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    
-    // Show loading indicator while checking auth state
-    if (authProvider.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    
-    // Navigate based on auth state
-    if (authProvider.isAuthenticated) {
-      return const PatientHomeScreen();
-    } else {
-      return const LoginScreen();
-    }
   }
 }

@@ -17,17 +17,20 @@ class PatientHomeScreen extends StatefulWidget {
 
 class _PatientHomeScreenState extends State<PatientHomeScreen> {
   int _currentIndex = 0;
+  bool _isSigningOut = false;
   
   late final List<Widget> _screens;
   
   @override
   void initState() {
     super.initState();
+    print("PatientHomeScreen initialized");
     _loadData();
     _initScreens();
   }
   
   void _initScreens() {
+    print("Initializing patient screens");
     _screens = [
       PatientDashboardScreen(
         onTabChange: (index) {
@@ -43,16 +46,52 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
   }
   
   Future<void> _loadData() async {
+    print("Loading patient data");
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    print("Current user: ${authProvider.user?.displayName}");
+    
     if (authProvider.user != null) {
       // Load patient data
       // Load appointments
+      print("User is authenticated, loading data");
+    } else {
+      print("User is not authenticated, should not be on this screen");
+      // If somehow we got here without authentication, go back to login
+      // Use Future.microtask to avoid calling setState during build
+      Future.microtask(() {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      });
     }
   }
   
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final String title = _getTitle();
+    
+    // If user is not authenticated, show loading screen
+    if (!authProvider.isAuthenticated) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
     return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: AppTheme.primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _isSigningOut ? null : _signOut,
+            tooltip: 'Sign Out',
+          ),
+        ],
+      ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -86,15 +125,54 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     );
   }
   
+  String _getTitle() {
+    switch (_currentIndex) {
+      case 0:
+        return 'Dashboard';
+      case 1:
+        return 'Appointments';
+      case 2:
+        return 'Book Appointment';
+      case 3:
+        return 'Profile';
+      default:
+        return 'SchedMed';
+    }
+  }
+  
   Future<void> _signOut() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.signOut();
+    if (_isSigningOut) return;
     
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
+    setState(() {
+      _isSigningOut = true;
+    });
+    
+    print("Signing out");
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
+    try {
+      await authProvider.signOut();
+      print("Sign out successful");
+      
+      if (context.mounted) {
+        // Use pushAndRemoveUntil to clear the navigation stack
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print("Error signing out: $e");
+      
+      if (mounted) {
+        setState(() {
+          _isSigningOut = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error signing out: $e')),
+        );
+      }
     }
   }
 }

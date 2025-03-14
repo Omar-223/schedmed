@@ -31,10 +31,10 @@ class UserService {
         });
   }
 
-  // Get all admins
-  Stream<List<UserModel>> getAllAdmins() {
+  // Get all clinics
+  Stream<List<UserModel>> getAllClinics() {
     return _usersCollection
-        .where('role', isEqualTo: 'admin')
+        .where('role', isEqualTo: 'clinic')
         .orderBy('name')
         .snapshots()
         .map((snapshot) {
