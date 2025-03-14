@@ -81,22 +81,22 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Welcome, ${authProvider.user?.displayName ?? 'Patient'}!',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                    Text(
+                      'Welcome, ${authProvider.user?.displayName ?? 'Patient'}!',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                                   color: AppTheme.textColor,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                    ),
                             ],
                           ),
                         ),
@@ -192,11 +192,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Next Appointment',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    const Text(
+                      'Next Appointment',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                             color: AppTheme.textColor,
                           ),
                         ),
@@ -235,15 +235,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                           ),
                         ),
                         if (appointmentProvider.patientAppointments.isNotEmpty)
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to appointments tab (index 1)
-                              if (widget.onTabChange != null) {
-                                widget.onTabChange!(1);
-                              }
-                            },
-                            child: const Text('View All'),
-                          ),
+                        TextButton(
+                          onPressed: () {
+                            // Navigate to appointments tab (index 1)
+                            if (widget.onTabChange != null) {
+                              widget.onTabChange!(1);
+                            }
+                          },
+                          child: const Text('View All'),
+                        ),
                       ],
                     ),
                     
@@ -594,9 +594,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           'No appointment history',
           style: TextStyle(
             color: AppTheme.textLightColor,
-          ),
-        ),
-      ),
+                ),
+              ),
+            ),
     );
   }
 

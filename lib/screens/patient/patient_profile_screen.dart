@@ -4,6 +4,7 @@ import 'package:schedmed/models/user_model.dart';
 import 'package:schedmed/providers/auth_provider.dart';
 import 'package:schedmed/utils/theme.dart';
 import 'package:schedmed/screens/auth/login_screen.dart';
+import 'package:schedmed/screens/admin/sample_data_screen.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({Key? key}) : super(key: key);
@@ -13,6 +14,9 @@ class PatientProfileScreen extends StatefulWidget {
 }
 
 class _PatientProfileScreenState extends State<PatientProfileScreen> {
+  // Flag to show developer options
+  bool _showDeveloperOptions = false;
+  
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -39,6 +43,25 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        actions: [
+          // Hidden developer options toggle
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: AppTheme.primaryColor),
+            onPressed: () {
+              setState(() {
+                _showDeveloperOptions = !_showDeveloperOptions;
+              });
+              if (_showDeveloperOptions) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Developer options enabled'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -84,6 +107,17 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                 // Navigate to medications schedule screen
               },
             ),
+            
+            // Developer options
+            if (_showDeveloperOptions)
+              _buildMenuItem(
+                icon: Icons.developer_mode,
+                title: 'Sample Data',
+                textColor: Colors.purple,
+                onTap: () {
+                  Navigator.pushNamed(context, '/sample-data');
+                },
+              ),
             
             _buildMenuItem(
               icon: Icons.logout_outlined,

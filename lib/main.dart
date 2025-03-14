@@ -4,9 +4,17 @@ import 'package:provider/provider.dart';
 import 'package:schedmed/providers/appointment_provider.dart';
 import 'package:schedmed/providers/auth_provider.dart';
 import 'package:schedmed/providers/doctor_provider.dart';
+import 'package:schedmed/screens/admin/sample_data_screen.dart';
 import 'package:schedmed/screens/auth/splash_screen.dart';
 import 'package:schedmed/utils/theme.dart';
 import 'firebase_options.dart';
+
+// Define route names as constants
+class AppRoutes {
+  static const String splash = '/';
+  static const String sampleData = '/sample-data';
+  // Add more routes as needed
+}
 
 void main() async {
   // Ensure Flutter is initialized
@@ -52,7 +60,11 @@ class MyApp extends StatelessWidget {
         title: 'SchedMed',
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
+        initialRoute: AppRoutes.splash,
+        routes: {
+          AppRoutes.splash: (context) => const SplashScreen(),
+          AppRoutes.sampleData: (context) => const SampleDataScreen(),
+        },
       ),
     );
   }

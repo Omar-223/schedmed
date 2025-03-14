@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:schedmed/models/appointment_model.dart';
+import 'package:schedmed/utils/firestore_schema.dart';
 import 'package:uuid/uuid.dart';
 
 class AppointmentService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _appointmentsCollection = 
-      FirebaseFirestore.instance.collection('appointments');
+      FirestoreSchema.appointmentsCollection;
 
   // Create a new appointment
   Future<String> createAppointment({
@@ -13,26 +14,24 @@ class AppointmentService {
     required String patientName,
     required String doctorId,
     required String doctorName,
+    required String doctorSpecialty,
     required DateTime appointmentDate,
     required String timeSlot,
+    required String reasonForVisit,
     String? notes,
   }) async {
     try {
-      String appointmentId = const Uuid().v4();
-      
-      await _appointmentsCollection.doc(appointmentId).set({
-        'patientId': patientId,
-        'patientName': patientName,
-        'doctorId': doctorId,
-        'doctorName': doctorName,
-        'appointmentDate': Timestamp.fromDate(appointmentDate),
-        'timeSlot': timeSlot,
-        'notes': notes,
-        'status': 'scheduled',
-        'createdAt': Timestamp.now(),
-      });
-      
-      return appointmentId;
+      return await FirestoreSchema.createAppointmentWithSchema(
+        patientId: patientId,
+        patientName: patientName,
+        doctorId: doctorId,
+        doctorName: doctorName,
+        doctorSpecialty: doctorSpecialty,
+        appointmentDate: appointmentDate,
+        timeSlot: timeSlot,
+        reasonForVisit: reasonForVisit,
+        notes: notes,
+      );
     } catch (e) {
       rethrow;
     }
@@ -154,6 +153,15 @@ class AppointmentService {
   Future<void> deleteAppointment(String appointmentId) async {
     try {
       await _appointmentsCollection.doc(appointmentId).delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Add sample appointments to Firestore
+  Future<void> addSampleAppointments(List<Map<String, dynamic>> sampleData) async {
+    try {
+      await FirestoreSchema.addSampleAppointments(sampleData);
     } catch (e) {
       rethrow;
     }
